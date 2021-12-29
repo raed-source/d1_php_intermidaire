@@ -10,6 +10,8 @@ echo "bonjour";
     <title>Ville_Users</title>
 </head>
 <body>
-    
+    <form action="" method="POST">
+        <p>Entrez nom de ville <input type="text" name="form_ville" vallue="valider"> </p>
+    </form>
 </body>
 </html>
