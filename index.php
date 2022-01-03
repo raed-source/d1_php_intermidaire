@@ -31,6 +31,7 @@ $mysqli = new mysqli('localhost', 'root', '', 'projet-villes');
             $row = $resultat->fetch_array();
             if ($row[0] > 0) {
 
+//-----------inserer la ville et user dans la table search et cree coockie pour enregistrer combien de fois la ville est saisie-----------------
 
                 if ($mysqli->query('INSERT INTO user_search (user, ville) VALUES ("' . $user . '", "' . $ville . '")')) {
                     $message = 'ajouter dans la table de recherche';
