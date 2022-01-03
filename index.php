@@ -17,33 +17,46 @@ $mysqli = new mysqli('localhost', 'root', '', 'projet-villes');
 
 <body>
     <?php
-    //------------------------si le nom de ville existe dans la base, on ajoute le user dans table user_searchs--------------------------
+    //------------------------recuperer les variables externes--------------------------
 
-    // if (isset($_POST['submit_form'])) 
-    // {
-    $ville_nom = $_POST['ville_nom'];
-    $user = $_POST['user'];
+    if (isset($_POST['submit_form'])) {
+        $user = $_POST['user'];
+        $ville = $_POST['ville'];
+        echo $user . ' ' . $ville;
 
-    $resultat = $mysqli->query('SELECT ville_id, ville_nom FROM villes  ville_nom');
-    while ($row = $resultat->fetch_array()) {
-        $villes[$row['ville_id']] = $row['ville_nom'];
+        if ((empty($user)) or empty($ville)) {
+            $message = 'veillez saisier une ville';
+        } else {
+            $resultat = $mysqli->query('SELECT count(*)  FROM villes WHERE ville_nom= "' . $ville . '"');
+            $row = $resultat->fetch_array();
+            if ($row[0] > 0) {
+
+
+                if ($mysqli->query('INSERT INTO user_search (user, ville) VALUES ("' . $user . '", "' . $ville . '")')) {
+                    $message = 'ajouter dans la table de recherche';
+                } else {
+                    $message = 'erreur';
+                }
+            } else {
+                $message = 'nouvelle ville';
+            }
+            //$mysqli->close();
+        }
     }
 
-    //}
+
     ?>
-    <form action="" method="POST">
+
+    <form action="index.php" method="POST">
         <p>Entrez votre nom <input type="text" name="user"> </p>
-        <p>Entrez nom de ville <input type="text" name="ville_nom"> </p>
+        <p>Entrez nom de ville <input type="text" name="ville"> </p>
         <p><input type="submit" name="submit_form" value="valider"></p>
     </form>
-    <ul>
-        <?php foreach ($villes as $id => $ville) : ?>
-            <li> <a href="index.php?id=<?php echo $id ?>"><?php echo $ville ?></a></li>
-        <?php endforeach ?>
-    </ul>
 
-    <?php $resultat->free() ?>
-    <?php $mysqli->close() ?>
+    <?php echo $message ?>
+    <?php $mysqli->close(); ?>
+
+
 
 
 </body>
