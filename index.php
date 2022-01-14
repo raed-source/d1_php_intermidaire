@@ -37,10 +37,14 @@ $mysqli = new mysqli('localhost', 'root', '', 'projet-villes');
             {
 //---------------------la ville est dans la base alors creer un cookie pour compter les nombre de visite-------------------------------
                 
-                if(isset($_COOKIE['nombre_visite']))
+                if(isset($_COOKIE['visite']))
                 {
-                    $nombre_visite=$_COOKIE['nombre_visite'];
-                    $nombre_visite++;
+                    $nombre_visite=$_COOKIE['visite'];
+//--------------------valeur de cookie---------------------------------------------------------------------
+                    $cookie_value=$_COOKIE['visite'];
+                    $cookie_value=serialize($cookie_value);
+                    $user=$cookie_value['user'];
+                    $user_visite=$cookie_value['user_visite'];
                 }
 
 //-----------inserer la ville et user dans la table search et cree coockie pour enregistrer combien de fois la ville est saisie-----------------
