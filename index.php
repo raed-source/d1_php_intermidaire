@@ -19,62 +19,43 @@ $mysqli = new mysqli('localhost', 'root', '', 'projet-villes');
     <?php
     //------------------------recuperer les variables externes--------------------------
 
-    if (isset($_POST['submit_form'])) 
-    {
-        $user = $_POST['user'];
-        $ville = $_POST['ville'];
-        echo $user . ' ' . $ville;
-        if ((empty($user)) or empty($ville)) 
-        {
-            $message = 'veillez saisier une ville';
-        } 
-        else 
-        {
-            $resultat = $mysqli->query('SELECT count(*)  FROM villes WHERE ville_nom= "' . $ville . '"');
+    if (isset($_POST['submit_form'])) {
+        $ville = $_POST['ville']; // à remplacer par ville_id
+
+
+        if (!empty($ville)) {
+            $resultat = $mysqli->query('SELECT count(*) as ville_fois, ville_id  FROM villes WHERE ville_nom= "' . $ville . '"');
             $row = $resultat->fetch_array();
-//----------------------verifier si la ville existe dans la base ici la table ville--------------------------------------
-            if ($row[0] > 0) 
-            {
-//---------------------la ville est dans la base alors creer un cookie pour compter les nombre de visite-------------------------------
-                
-                if(isset($_COOKIE['visite']))
-                {
-                    $nombre_visite=$_COOKIE['visite'];
-//--------------------valeur de cookie---------------------------------------------------------------------
-                    $cookie_value=$_COOKIE['visite'];
-                    $cookie_value=serialize($cookie_value);
-                    $user=$cookie_value['user'];
-                    $user_visite=$cookie_value['user_visite'];
-                }
+            $count = $row['ville_fois'];
+            $db_ville_id = $row['ville_id'];
+            //----------------------verifier si la ville existe dans la base ici la table ville--------------------------------------
+            if ($count > 0) {
+                //---------------------la ville est dans la base alors creer un cookie pour compter les nombre de visite-------------------------------
 
-//-----------inserer la ville et user dans la table search et cree coockie pour enregistrer combien de fois la ville est saisie-----------------
-
-                if ($mysqli->query('INSERT INTO user_search (user, ville) VALUES ("' . $user . '", "' . $ville . '")')) 
-                {
-                    $message = 'ajouter dans la table de recherche';
-                } 
-                else 
-                {
-                    $message = 'erreur';
+                if (isset($_COOKIE['visite'])) {
+                    $cookie_value = $_COOKIE['visite'];
+                    //--------------------valeur de cookie---------------------------------------------------------------------
+                    $cookie_value = unserialize($cookie_value);
+                    $user_id = $cookie_value['user_id'];
+                    $ville_id = $cookie_value[$db_ville_id];
+                    $user_searche_data = serialize($cookie_value);
+                    //-------------------insertion dans la table user_searche-------------------------------------------------
+                    $mysqli->query('INSERT INTO user_search (user_id, ville_id)values("' . $user_id . '", "' . $ville_id . '"');
+                } else {
+                    
                 }
-            } 
-            else 
-            {
-                $message = 'nouvelle ville';
             }
-            //$mysqli->close();
         }
     }
 
-
     ?>
-<!-- ------------------------------------------------forme chercher ville---------------------------------------------- -->
+    <!-- ------------------------------------------------forme chercher ville---------------------------------------------- -->
     <form action="index.php" method="POST">
         <p>Entrez votre nom <input type="text" name="user"> </p>
         <p>Entrez nom de ville <input type="text" name="ville"> </p>
         <p><input type="submit" name="submit_form" value="valider"></p>
     </form>
-<!-- --------------------------------------------------liberation des variables--------------------------------------------------------- -->
+    <!-- --------------------------------------------------liberation des variables--------------------------------------------------------- -->
     <?php echo $message ?>
     <?php $mysqli->close(); ?>
 
